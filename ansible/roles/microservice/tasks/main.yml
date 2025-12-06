@@ -1,0 +1,17 @@
+- name: Clonar el repositorio del microservicio
+  git:
+    repo: "{{ git_prefix }}{{ repo_url }}"
+    dest: "{{ base_path }}"
+    version: "{{ branch | default('main') }}"
+    force: yes
+
+- name: Eliminar contenedores previos
+  shell: docker compose down
+  args:
+    chdir: /home/ubuntu/app
+  ignore_errors: yes
+
+- name: Levantar contenedores del microservicio
+  shell: docker compose up -d --build
+  args:
+    chdir: /home/ubuntu/app

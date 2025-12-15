@@ -3,6 +3,7 @@ variable "instances" {
         instance_type = string
         subnet_id     = string
         public_ip     = bool
+        private_ip    = optional(string)
     }))
 }
 

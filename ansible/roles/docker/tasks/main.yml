@@ -93,24 +93,3 @@
 
 - debug:
     msg: "Compose instalado: {{ docker_compose_version.stdout }}"
-  
-- name: Instalar pip para Python 3
-  apt:
-    name: python3-pip
-    state: present
-    update_cache: yes
-
-- name: Instalar virtualenv
-  apt:
-    name: python3-venv
-    state: present
-
-- name: Crear virtualenv para Ansible
-  command: python3 -m venv /home/ubuntu/ansible-venv
-  args:
-    creates: /home/ubuntu/ansible-venv
-
-- name: Instalar Docker SDK dentro del venv
-  pip:
-    name: docker
-    virtualenv: /home/ubuntu/ansible-venv

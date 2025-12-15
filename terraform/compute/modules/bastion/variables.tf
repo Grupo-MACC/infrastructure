@@ -23,3 +23,9 @@ variable "bastion_sg_id" {
     description = "The security group ID to associate with the bastion host."
     type        = string
 }
+
+variable "eip_allocation_id" {
+  description = "EIP allocation ID para asociar al bastion"
+  type        = string
+  default     = null
+}

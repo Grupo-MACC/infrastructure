@@ -7,6 +7,7 @@ resource "aws_instance" "services" {
     vpc_security_group_ids = [var.sg_id]
     associate_public_ip_address = each.value.public_ip
     key_name              = var.key_name
+    private_ip            = lookup(each.value, "private_ip", null)
 
     tags = {
         Name = each.key

@@ -12,5 +12,5 @@ data "terraform_remote_state" "peering_create" {
 module "vpc_peering_accept" {
   source = "../../../modules/vpc-peering-accept"
 
-  vpc_peering_connection_id = data.terraform_remote_state.peering_create.outputs.peering_connection_id
+  vpc_peering_connection_id = data.terraform_remote_state.peering_create.outputs.vpc_peering_connection_id
 }

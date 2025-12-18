@@ -35,7 +35,7 @@ module "microservices" {
     ami = var.ami
     key_name = var.ssh_key_name
     sg_id = data.terraform_remote_state.security.outputs.microservices_sg_id
-
+    
     instances = { # 10.0.11.10 -> 10.0.11.250
         auth_service = {
             instance_type = var.instance_type

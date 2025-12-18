@@ -29,7 +29,7 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-module "microservices" {
+/*module "microservices" {
     source = "../../modules/ec2"
 
     ami = var.ami
@@ -49,7 +49,7 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.0.11.11"
         }
-        /*machine_service = {
+        machine_service = {
             instance_type = "var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
@@ -66,7 +66,7 @@ module "microservices" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.14"
-        }*/
+        }
         rabbitmq_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
@@ -80,4 +80,4 @@ module "microservices" {
             private_ip    = "10.0.11.40"
         }
     }
-}
+}*/

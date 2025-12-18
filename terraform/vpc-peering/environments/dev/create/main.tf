@@ -25,6 +25,18 @@ module "vpc_peering_create" {
 
   vpc_id          = data.terraform_remote_state.vpc_requester.outputs.vpc_id
   peer_vpc_id     = data.terraform_remote_state.vpc_accepter.outputs.vpc_id
-  peer_owner_id   = data.terraform_remote_state.vpc_accepter.outputs.account_id
+  #peer_owner_id   = data.terraform_remote_state.vpc_accepter.outputs.account_id
+  peer_owner_id   = "901752335700"
   peer_region     = "us-east-1"
+}
+
+module "vpc_peering_routing" {
+  source = "../../../modules/vpc-peering-routing"
+
+  private_route_table_id      = data.terraform_remote_state.vpc_requester.outputs.private_route_table_id
+  public_route_table_id       = data.terraform_remote_state.vpc_requester.outputs.public_route_table_id
+  peer_vpc_cidr_blocks       = ["10.1.0.0/16"]
+  vpc_peering_connection_id   = module.vpc_peering_create.vpc_peering_connection_id
+  private_subnet_id          = data.terraform_remote_state.vpc_requester.outputs.private_subnet_id
+  public_subnet_id           = data.terraform_remote_state.vpc_requester.outputs.public_subnet_id
 }

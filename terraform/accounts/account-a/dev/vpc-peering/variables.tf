@@ -24,7 +24,7 @@ variable "peer_s3_path" {
 variable "peer_owner_id" {
     description = "The AWS account ID of the peer VPC owner"
     type        = string
-    default     = "615136140268" #901752335700
+    default     = "901752335700" #aimar
 }
 
 variable "peer_vpc_cidr_blocks" {

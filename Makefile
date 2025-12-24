@@ -47,9 +47,9 @@ help:
 # =========================
 # Targets principales
 # =========================
-.PHONY: all backend network peeringsecurity compute
+.PHONY: all backend network peering security compute ansible-launch
 
-all: backend network peering security compute
+all: backend network peering security compute ansible-launch
 
 backend:
 	@echo ">>> Deploying backend"
@@ -119,3 +119,12 @@ destroy-backend:
 	$(TF) init && \
 	$(TF) destroy -auto-approve
 
+# =========================
+# Ansible
+# =========================
+INVENTORY = inventories/dev.ini
+VARS_FILE = inventories/dev_vars.yaml
+
+ansible-launch:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml

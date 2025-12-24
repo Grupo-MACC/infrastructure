@@ -6,4 +6,4 @@
   roles:
     - microservice
   vars:
-    ansible_python_interpreter: /home/ubuntu/ansible-venv/bin/python
+    ansible_python_interpreter: auto

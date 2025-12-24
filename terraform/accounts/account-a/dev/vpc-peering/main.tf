@@ -2,7 +2,7 @@ data "terraform_remote_state" "vpc_requester" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc"
+    bucket = "tf-states-macc-grupo2"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "vpc_accepter" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-2"
+    bucket = "tf-states-macc-grupo2-2"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }

@@ -44,7 +44,7 @@ resource "aws_security_group" "micro_sg" {
         from_port   = 0
         to_port     = 65535
         protocol    = "tcp"
-        cidr_blocks = [data.aws_vpc.selected.cidr_block]
+        cidr_blocks = var.internal_cidr
     }
 
     egress {

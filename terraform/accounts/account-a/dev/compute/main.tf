@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc"
+    bucket = "tf-states-macc-grupo2"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc"
+    bucket = "tf-states-macc-grupo2"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -29,8 +29,8 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-/*module "microservices" {
-    source = "../../../../modules/compute/bastion"
+module "microservices" {
+    source = "../../../../modules/compute/ec2"
 
     ami = var.ami
     key_name = var.ssh_key_name
@@ -43,14 +43,14 @@ module "bastion" {
             public_ip     = false
             private_ip    = "10.0.11.10"
         }
-        order_service = {
+        /*order_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.11"
         }
         machine_service = {
-            instance_type = "var.instance_type
+            instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.12"
@@ -72,7 +72,7 @@ module "bastion" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.30"
-        }
+        }*/
         consul_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
@@ -80,4 +80,4 @@ module "bastion" {
             private_ip    = "10.0.11.40"
         }
     }
-}*/
+}

@@ -1,5 +1,9 @@
 - name: Preparar entorno para despliegue de microservicio
-  hosts: microservices
+  hosts: 
+    - microservices
+    - consul
+    - rabbitmq
+    - auth
   become: yes
   roles:
     - docker

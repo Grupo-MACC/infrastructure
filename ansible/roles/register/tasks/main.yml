@@ -1,0 +1,16 @@
+- name: Hacer el script ejecutable
+  file:
+    path: "{{ base_path }}/{{ script_name }}"
+    mode: '0755'
+    state: file
+
+- name: Ejecutar el script de registro del servicio
+  shell: "bash {{ base_path }}/{{ script_name }}"
+  args:
+    chdir: "{{ base_path }}"
+  register: script_output
+  ignore_errors: no
+
+- name: Mostrar la salida del script de registro
+  debug:
+    var: script_output.stdout

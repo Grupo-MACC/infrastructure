@@ -1,9 +1,0 @@
-- name: Desplegar microservicio
-  hosts: microservices
-  become: yes
-  vars_files:
-    - ../inventories/dev_vars.yaml
-  roles:
-    - microservice
-  vars:
-    ansible_python_interpreter: /usr/bin/python3

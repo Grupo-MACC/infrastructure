@@ -43,13 +43,13 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.0.11.10"
         }
-        /*order_service = {
+        order_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.11"
         }
-        machine_service = {
+        /*machine_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
@@ -66,13 +66,13 @@ module "microservices" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.14"
-        }
+        }*/
         rabbitmq_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.30"
-        }*/
+        }
         consul_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id

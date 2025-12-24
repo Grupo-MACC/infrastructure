@@ -1,0 +1,83 @@
+- name: Desplegar servicio consul
+  hosts: consul
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - microservice
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Desplegar servicio rabbitmq
+  hosts: rabbitmq
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - microservice
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Registrar servicio rabbitmq
+  hosts: 
+    - rabbitmq
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - register
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    script_name: "service_register.sh"
+
+- name: Desplegar servicio auth
+  hosts: 
+    - auth
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - microservice
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Registrar servicio
+  hosts: 
+    - auth
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - register
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    script_name: "service_register.sh"
+
+- name: Desplegar microservicios
+  hosts: 
+    - microservices
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - microservice
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Registrar microservicios
+  hosts: 
+    - microservices
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - register
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    script_name: "service_register.sh"

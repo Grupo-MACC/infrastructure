@@ -1,0 +1,12 @@
+- name: Definir nombre del servicio desde el hostname
+  set_fact:
+    service_name: "{{ inventory_hostname | regex_replace('_service$', '') }}"
+
+- name: Renderizar script de registro en Consul
+  template:
+    src: service_register.sh.j2
+    dest: /usr/local/bin/service_register.sh
+    mode: '0755'
+
+- name: Registrar servicio en Consul
+  command: /usr/local/bin/service_register.sh

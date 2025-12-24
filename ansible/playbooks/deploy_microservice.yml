@@ -1,5 +1,5 @@
 - name: Desplegar microservicio
-  hosts: microservices
+  hosts: microservices, globalservices
   become: yes
   vars_files:
     - ../inventories/dev_vars.yaml

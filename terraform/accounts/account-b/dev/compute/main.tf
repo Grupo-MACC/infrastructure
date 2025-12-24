@@ -38,6 +38,18 @@ module "microservices" {
     
     instances = { # 10.1.11.10 -> 10.1.11.250
 
+        consul_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
+            public_ip     = false
+            private_ip    = "10.1.11.40"
+        }
+        auth_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
+            public_ip     = false
+            private_ip    = "10.1.11.10"
+        }
         /*auth_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
@@ -79,12 +91,12 @@ module "microservices" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.1.11.40"
-        }*/
+        }
         logs_inf_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.1.11.50"
-        }
+        }*/
     }
 }

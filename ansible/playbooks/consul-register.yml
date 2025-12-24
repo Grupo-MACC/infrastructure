@@ -1,0 +1,7 @@
+- name: Registrar microservicios en Consul
+  hosts: microservices
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - register

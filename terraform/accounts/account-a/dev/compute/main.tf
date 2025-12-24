@@ -29,20 +29,26 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-/*module "microservices" {
-    source = "../../../../modules/compute/bastion"
+module "microservices" {
+    source = "../../../../modules/compute/ec2"
 
     ami = var.ami
     key_name = var.ssh_key_name
     sg_id = data.terraform_remote_state.security.outputs.microservices_sg_id
     
     instances = { # 10.0.11.10 -> 10.0.11.250
+        consul_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
+            public_ip     = false
+            private_ip    = "10.0.11.40"
+        }
         auth_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.10"
-        }
+        }/*
         order_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
@@ -72,12 +78,7 @@ module "bastion" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
             private_ip    = "10.0.11.30"
-        }
-        consul_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
-            public_ip     = false
-            private_ip    = "10.0.11.40"
-        }
+        }*/
+        
     }
-}*/
+}

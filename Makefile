@@ -51,6 +51,8 @@ help:
 
 all: backend network peering security compute ansible-launch
 
+all-1vpc: backend network security compute ansible-launch
+
 backend:
 	@echo ">>> Deploying backend"
 	cd $(BACKEND_DIR) && \
@@ -128,3 +130,7 @@ VARS_FILE = inventories/dev_vars.yaml
 ansible-launch:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml
+
+ansible-consul-register:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml

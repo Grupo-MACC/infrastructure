@@ -1,5 +1,5 @@
 - name: Registrar microservicios en Consul
-  hosts: microservices
+  hosts: "{{ target_hosts }}"
   become: yes
   vars_files:
     - ../inventories/dev_vars.yaml

@@ -1,5 +1,5 @@
 - name: Preparar entorno para despliegue de microservicio
-  hosts: microservices, globalservices
+  hosts: microservices
   become: yes
   roles:
     - docker

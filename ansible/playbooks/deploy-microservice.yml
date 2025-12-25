@@ -1,52 +1,41 @@
-- name: Desplegar servicio consul
-  hosts: consul
-  become: yes
-  vars_files:
-    - ../inventories/dev_vars.yaml
-  roles:
-    - microservice
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-
-- name: Desplegar servicio rabbitmq
-  hosts: rabbitmq
+- name: Clonar el repositorio del microservicio
+  hosts:
+    - microservices
+    - rabbitmq
+    - consul
+    - auth
   become: yes
   any_errors_fatal: true
   vars_files:
     - ../inventories/dev_vars.yaml
   roles:
-    - microservice
+    - repository
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
-- name: Registrar servicio rabbitmq
+- name: Desplegar consult y rabbitmq
   hosts: 
+    - consul
     - rabbitmq
   become: yes
   any_errors_fatal: true
   vars_files:
     - ../inventories/dev_vars.yaml
   roles:
-    - register
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    script_name: "service_register.sh"
-
-- name: Desplegar servicio auth
-  hosts: 
-    - auth
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - ../inventories/dev_vars.yaml
-  roles:
-    - microservice
+    - deploy
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
-- name: Registrar servicio
+- name: Esperar 30 segundos antes de continuar
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - pause:
+        seconds: 30
+
+- name: Registrar rabbitmq
   hosts: 
-    - auth
+    - rabbitmq
   become: yes
   any_errors_fatal: true
   vars_files:
@@ -65,13 +54,14 @@
   vars_files:
     - ../inventories/dev_vars.yaml
   roles:
-    - microservice
+    - deploy
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
-- name: Registrar microservicios
+- name: Registrar todos los servicios
   hosts: 
     - microservices
+    - auth
   become: yes
   any_errors_fatal: true
   vars_files:
@@ -81,3 +71,15 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
     script_name: "service_register.sh"
+
+- name: Desplegar servicio auth
+  hosts: 
+    - auth
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - deploy
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

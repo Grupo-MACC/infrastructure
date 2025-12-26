@@ -13,6 +13,13 @@ SERVICE_ADDRESS="{{ ansible_facts['default_ipv4']['address'] }}"
 TAGS='{{ service_tags | default(["microservice"]) | to_json }}'
 META='{{ service_meta | default({}) | to_json }}'
 
+# Check HTTP calculado 100% en Jinja (sin mezclar Bash)
+{% if service_name == 'rabbitmq' %}
+CHECK_HTTP="http://{{ ansible_facts['default_ipv4']['address'] }}:15672/api/healthchecks/node"
+{% else %}
+CHECK_HTTP="http://{{ ansible_facts['default_ipv4']['address'] }}:{{ service_port }}/docs"
+{% endif %}
+
 curl -s -X PUT "http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
   -H "Content-Type: application/json" \
   -d "{
@@ -23,7 +30,7 @@ curl -s -X PUT "http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" 
     \"Tags\": ${TAGS},
     \"Meta\": ${META},
     \"Check\": {
-      \"HTTP\": \"http://${SERVICE_ADDRESS}:${SERVICE_PORT}/docs\",
+      \"HTTP\": \"${CHECK_HTTP}\",
       \"Interval\": \"10s\",
       \"Timeout\": \"5s\"
     }

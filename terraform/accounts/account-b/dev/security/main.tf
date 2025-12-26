@@ -2,11 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-<<<<<<< HEAD
-    bucket = "tf-states-macc-grupo2"
-=======
     bucket = "tf-states-macc-2"
->>>>>>> 0c4f68af0eae4df1758770c80d7bd2cb26cb00d8
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -17,4 +13,5 @@ module "security_groups" {
     name = var.environment
     vpc_id = data.terraform_remote_state.network.outputs.vpc_id
     allowed_ssh_cidr = var.allowed_ssh_cidr
+
 }

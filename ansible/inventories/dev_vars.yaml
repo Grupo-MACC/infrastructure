@@ -2,7 +2,7 @@ git_prefix: "https://github.com/Grupo-MACC/"
 base_path: "/home/ubuntu/app"
 
 # Variables para despliegue de microservicios
-consul_host: 10.1.11.40
+consul_host: 10.0.11.40
 consul_port: 8500
 service_port: 5000
 service_name: "{{ inventory_hostname | regex_replace('_service$', '') }}"

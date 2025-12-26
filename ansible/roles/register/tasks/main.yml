@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-- name: Hacer el script ejecutable
-  file:
-    path: "{{ base_path }}/{{ script_name }}"
-    mode: '0755'
-    state: file
-
-- name: Ejecutar el script de registro del servicio
-  shell: "bash {{ base_path }}/{{ script_name }}"
-  args:
-    chdir: "{{ base_path }}"
-  register: script_output
-  ignore_errors: no
-
-- name: Mostrar la salida del script de registro
-  debug:
-    var: script_output.stdout
-=======
 - name: Definir nombre del servicio desde el hostname
   set_fact:
     service_name: "{{ inventory_hostname | regex_replace('_service$', '') }}"
@@ -28,4 +10,3 @@
 
 - name: Registrar servicio en Consul
   command: /usr/local/bin/service_register.sh
->>>>>>> 0c4f68af0eae4df1758770c80d7bd2cb26cb00d8

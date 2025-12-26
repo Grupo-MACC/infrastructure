@@ -29,55 +29,68 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-/*module "microservices" {
+module "microservices" {
     source = "../../../../modules/compute/ec2"
 
     ami = var.ami
     key_name = var.ssh_key_name
     sg_id = data.terraform_remote_state.security.outputs.microservices_sg_id
     
-    instances = { # 10.0.11.10 -> 10.0.11.250
+    instances = { # 10.1.11.10 -> 10.1.11.250
+
+        consul_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
+            public_ip     = false
+            private_ip    = "10.1.11.40"
+        }
         auth_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.10"
+            private_ip    = "10.1.11.10"
         }
         order_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.11"
+            private_ip    = "10.1.11.11"
         }
         machine_service = {
-            instance_type = "var.instance_type
+            instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.12"
+            private_ip    = "10.1.11.12"
         }
         payment_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.13"
+            private_ip    = "10.1.11.13"
         }
         delivery_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.14"
+            private_ip    = "10.1.11.14"
         }
         rabbitmq_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.30"
-        }
+            private_ip    = "10.1.11.30"
+        }/*
         consul_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
             public_ip     = false
-            private_ip    = "10.0.11.40"
+            private_ip    = "10.1.11.40"
         }
+        logs_inf_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id
+            public_ip     = false
+            private_ip    = "10.1.11.50"
+        }*/
     }
-}*/
+}

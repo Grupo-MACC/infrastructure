@@ -8,7 +8,7 @@ resource "aws_instance" "services" {
     associate_public_ip_address = each.value.public_ip
     key_name              = var.key_name
     private_ip            = lookup(each.value, "private_ip", null)
-
+    user_data_replace_on_change = true
     tags = {
         Name = each.key
     }

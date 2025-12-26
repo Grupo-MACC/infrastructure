@@ -1,0 +1,6 @@
+- name: Esperar 30 segundos antes de continuar
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - pause:
+        seconds: 30

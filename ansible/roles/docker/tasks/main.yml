@@ -17,14 +17,10 @@
     state: directory
     mode: '0755'
 
-- name: Descargar clave GPG Docker temporal
-  get_url:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /tmp/docker.gpg
-    mode: '0644'
-
-- name: Convertir clave GPG a formato apt
-  command: gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.gpg
+# Descargar y convertir la clave GPG de Docker en formato correcto
+- name: Descargar y configurar clave GPG de Docker
+  shell: |
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   args:
     creates: /etc/apt/keyrings/docker.gpg
 

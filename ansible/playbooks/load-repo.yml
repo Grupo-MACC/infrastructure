@@ -1,0 +1,9 @@
+- name: Descargar repositorio del microservicio
+  hosts: microservices
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - repository
+  vars:
+    ansible_python_interpreter: auto

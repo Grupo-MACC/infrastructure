@@ -47,9 +47,11 @@ help:
 # =========================
 # Targets principales
 # =========================
-.PHONY: all backend network peeringsecurity compute
+.PHONY: all backend network peering security compute ansible-launch
 
-all: backend network peering security compute
+all: backend network peering security compute ansible-launch
+
+all-1vpc: backend network security compute ansible-launch
 
 backend:
 	@echo ">>> Deploying backend"
@@ -119,3 +121,21 @@ destroy-backend:
 	$(TF) init && \
 	$(TF) destroy -auto-approve
 
+# =========================
+# Ansible
+# =========================
+INVENTORY = inventories/dev.ini
+VARS_FILE = inventories/dev_vars.yaml
+
+ansible-consul-register:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml
+
+ansible-launch:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=globalservices"
+	cd ansible && ansible-playbook playbooks/sleep.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=broker"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=operativeservices"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=operativeservices,authentication"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=authentication"

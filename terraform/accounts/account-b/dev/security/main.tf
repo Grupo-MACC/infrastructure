@@ -2,7 +2,11 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
+<<<<<<< HEAD
     bucket = "tf-states-macc-grupo2"
+=======
+    bucket = "tf-states-macc-2"
+>>>>>>> 0c4f68af0eae4df1758770c80d7bd2cb26cb00d8
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }

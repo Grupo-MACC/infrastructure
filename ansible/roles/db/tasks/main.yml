@@ -1,0 +1,26 @@
+- name: Instalar mysql-client
+  apt:
+    name: mysql-client
+    update_cache: yes
+    state: present
+
+- name: Instalar python3-pymysql (requerido por el módulo mysql_db)
+  apt:
+    name: python3-pymysql
+    state: present
+
+- name: Crear bases de datos en RDS
+  mysql_db:
+    name: "{{ item }}"
+    state: present
+    login_host: "{{ rds_host }}"
+    login_user: admin
+    login_password: maccadmin
+    login_port: 3306
+  loop: 
+    - order_db
+    - auth_db
+    - payment_db
+    - delivery_db
+    - warehouse_db
+  run_once: true

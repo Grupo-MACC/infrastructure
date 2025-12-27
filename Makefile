@@ -127,6 +127,11 @@ destroy-backend:
 INVENTORY = inventories/dev.ini
 VARS_FILE = inventories/dev_vars.yaml
 
+# Debe tener permisos de ejecución: chmod +x ansible/roles/db/scripts/get-rds-host.sh
+ansible-db-init:
+	RDS_HOST=$$(ansible/roles/db/scripts/get-rds-host.sh) && \
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/db-init.yml
+
 ansible-consul-register:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml
 

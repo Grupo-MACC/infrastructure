@@ -1,0 +1,7 @@
+- name: Descargar repositorio del microservicio
+  hosts: bastion
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - db

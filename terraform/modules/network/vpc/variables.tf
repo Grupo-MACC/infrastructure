@@ -1,30 +1,42 @@
 variable "name" {
-  description = "The name of the VPC"
+  description = "Name prefix for all resources"
   type        = string
 }
 
 variable "cidr_block" {
-  description = "The CIDR block for the VPC"
+  description = "CIDR block for VPC"
   type        = string
 }
 
-variable "public_subnet_cidr" {
-  description = "The CIDR block for the public subnet"
-  type        = string
+variable "azs" {
+  description = "List of availability zones (2 required)"
+  type        = list(string)
+  validation {
+    condition     = length(var.azs) == 2
+    error_message = "Exactly 2 availability zones must be provided."
+  }
 }
 
-variable "private_subnet_cidr" {
-  description = "The CIDR block for the private subnet"
-  type        = string
+variable "public_subnet_cidrs" {
+  description = "CIDR blocks for public subnets (2 required)"
+  type        = list(string)
+  validation {
+    condition     = length(var.public_subnet_cidrs) == 2
+    error_message = "Exactly 2 public subnet CIDRs must be provided."
+  }
+}
+
+variable "private_subnet_cidrs" {
+  description = "CIDR blocks for private subnets (2 required)"
+  type        = list(string)
+  validation {
+    condition     = length(var.private_subnet_cidrs) == 2
+    error_message = "Exactly 2 private subnet CIDRs must be provided."
+  }
 }
 
 variable "enable_nat_gateway" {
-  description = "Whether to enable NAT Gateway for private subnets"
+  description = "Enable NAT Gateway for private subnets"
   type        = bool
   default     = true
-}
-
-variable "az" {
-  description = "Availability Zone"
-  type        = string
 }

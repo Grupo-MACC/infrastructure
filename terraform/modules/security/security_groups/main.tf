@@ -82,3 +82,29 @@ resource "aws_security_group" "micro_sg" {
         Name = "${var.name}-micro-sg"
     }
 }
+
+resource "aws_security_group" "load_balancer_sg" {
+  name       = "${var.name}-alb-sg"
+  vpc_id   = data.aws_vpc.selected.id
+
+  description = "Security group for ALB"
+  
+  ingress {
+    description = "Allow HTTP from internal VPC"
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = [data.aws_vpc.selected.cidr_block]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.name}-alb-sg"
+  }
+}

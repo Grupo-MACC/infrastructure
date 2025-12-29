@@ -64,11 +64,11 @@ resource "aws_security_group" "micro_sg" {
     }
 
     ingress {
-        description = "VPC internal (all TCP)"
-        from_port   = 0
-        to_port     = 65535
-        protocol    = "tcp"
-        cidr_blocks = var.internal_cidr
+        description     = "Traffic from internal ALB"
+        from_port       = 0
+        to_port         = 65535
+        protocol        = "tcp"
+        security_groups = [aws_security_group.load_balancer_sg.id]
     }
 
     egress {
@@ -84,27 +84,59 @@ resource "aws_security_group" "micro_sg" {
 }
 
 resource "aws_security_group" "load_balancer_sg" {
-  name       = "${var.name}-alb-sg"
-  vpc_id   = data.aws_vpc.selected.id
+  name        = "${var.name}-alb-sg"
+  description = "Security group for internal ALB"
+  vpc_id      = data.aws_vpc.selected.id
 
-  description = "Security group for ALB"
-  
   ingress {
-    description = "Allow HTTP from internal VPC"
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.selected.cidr_block]
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
     Name = "${var.name}-alb-sg"
   }
+}
+
+resource "aws_security_group" "api_gateway_vpc_link_sg" {
+  name        = "${var.name}-api-gateway-vpc-link-sg"
+  description = "Security group for API Gateway VPC Link"
+  vpc_id      = data.aws_vpc.selected.id
+
+  tags = {
+    Name = "${var.name}-api-gateway-vpc-link-sg"
+  }
+}
+
+resource "aws_security_group_rule" "api_gw_to_alb" {
+  type                     = "egress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+
+  security_group_id        = aws_security_group.api_gateway_vpc_link_sg.id
+  source_security_group_id = aws_security_group.load_balancer_sg.id
+
+  description = "API Gateway VPC Link to ALB"
+}
+
+resource "aws_security_group_rule" "alb_from_api_gw" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+
+  security_group_id        = aws_security_group.load_balancer_sg.id
+  source_security_group_id = aws_security_group.api_gateway_vpc_link_sg.id
+
+  description = "ALB from API Gateway VPC Link"
 }

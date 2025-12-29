@@ -12,9 +12,9 @@ locals {
       instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "delivery_service")]
       health    = "/delivery/health"
     }
-    /*machines = {
+    machines = {
         instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "machine_service")]
         health    = "/machine/health"
-    }*/
+    }
   }
 }

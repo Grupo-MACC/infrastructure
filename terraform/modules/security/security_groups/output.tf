@@ -12,3 +12,7 @@ output "rds_sg_id" {
 output "load_balancer_sg_id" {
   value = aws_security_group.load_balancer_sg.id
 }
+
+output "api_gateway_vpc_link_sg_id" {
+  value = aws_security_group.api_gateway_vpc_link_sg.id
+}

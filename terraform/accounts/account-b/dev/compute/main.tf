@@ -61,53 +61,39 @@ module "microservices" {
     
     instances = { # 10.1.11.10 -> 10.1.11.250
 
-        order_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
-            public_ip     = false
-            private_ip    = "10.1.12.11"
-        }
-        /*consul_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.40"
-        }
         auth_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.10"
         }
-        machine_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.12"
-        }
-        payment_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.13"
-        }
-        delivery_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.14"
-        }
-        rabbitmq_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.30"
-        }
-        logs_inf_service = {
+        warehouse_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
             public_ip     = false
-            private_ip    = "10.1.12.50"
-        }*/
+            private_ip    = "10.1.11.11"
+        }
+    }
+}
+
+module "target_groups" {
+    source = "../../../../modules/target-group"
+
+    for_each = local.tg_services
+
+    name        = "${each.key}-tg-dev"
+    vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+    port        = 5000
+    protocol    = "HTTP"
+    target_type = "instance"
+
+    health_check_path = each.value.health
+
+    targets = {
+        for k in each.value.instances :
+        k => {
+        id   = module.microservices.instances_info[k].id
+        port = 5000
+        }
     }
 }

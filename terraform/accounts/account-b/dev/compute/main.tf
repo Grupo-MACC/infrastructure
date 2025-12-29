@@ -61,18 +61,25 @@ module "microservices" {
     
     instances = { # 10.1.11.10 -> 10.1.11.250
 
-        order_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
-            public_ip     = false
-            private_ip    = "10.1.12.11"
-        }
-        /*consul_service = {
+        consul_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.40"
         }
+        rabbitmq_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
+            public_ip     = false
+            private_ip    = "10.1.11.30"
+        }
+        order_service = {
+            instance_type = "t3.medium"
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
+            public_ip     = false
+            private_ip    = "10.1.11.11"
+        }
+        /*
         auth_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
@@ -96,12 +103,6 @@ module "microservices" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.14"
-        }
-        rabbitmq_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.30"
         }
         logs_inf_service = {
             instance_type = var.instance_type

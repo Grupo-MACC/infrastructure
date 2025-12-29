@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+
+SERVICE_NAME="rds"
+SERVICE_ID="{{ service_id | default(service_name) }}"
+SERVICE_PORT=3306
+
+CONSUL_HOST="{{ consul_host }}"
+CONSUL_PORT={{ consul_port }}
+
+SERVICE_ADDRESS="{{ service_address }}"
+
+TAGS='["database", "rds", "mysql"]'
+META='{"type": "rds", "engine": "mysql"}'
+
+curl -s -X PUT "http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"ID\": \"${SERVICE_ID}\",
+    \"Name\": \"${SERVICE_NAME}\",
+    \"Address\": \"${SERVICE_ADDRESS}\",
+    \"Port\": ${SERVICE_PORT},
+    \"Tags\": ${TAGS},
+    \"Meta\": ${META},
+    \"Check\": {
+      \"TCP\": \"${SERVICE_ADDRESS}:${SERVICE_PORT}\",
+      \"Interval\": \"30s\",
+      \"Timeout\": \"5s\"
+    }
+  }"
+
+echo "✔ Servicio ${SERVICE_NAME} registrado en Consul (${SERVICE_ADDRESS}:${SERVICE_PORT})"

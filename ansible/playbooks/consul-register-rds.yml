@@ -1,0 +1,23 @@
+- name: Registrar RDS en Consul desde bastion
+  hosts: bastion
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  tasks:
+    - name: Renderizar script de registro RDS en Consul
+      template:
+        src: ../roles/register/templates/service_register_rds.sh.j2
+        dest: /usr/local/bin/service_register_rds.sh
+        mode: '0755'
+      vars:
+        service_name: "rds"           # ← Forzar nombre a "rds"
+        service_id: "rds"             # ← Forzar ID a "rds"
+        service_address: "{{ rds_host }}"
+        service_port: 3306
+
+    - name: Registrar RDS en Consul
+      command: /usr/local/bin/service_register_rds.sh
+
+    - name: Mostrar resultado
+      debug:
+        msg: "✔ RDS registrado en Consul: {{ rds_host }}:3306"

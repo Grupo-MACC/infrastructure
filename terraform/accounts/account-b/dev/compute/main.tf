@@ -74,7 +74,7 @@ module "microservices" {
             private_ip    = "10.1.11.30"
         }
         order_service = {
-            instance_type = "t3.medium"
+            instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.11"

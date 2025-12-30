@@ -22,6 +22,12 @@ variable "instance_type" {
     default     = "t3.micro"
 }
 
+variable "instance_type_big" {
+    description = "The instance type for the bastion host"
+    type        = string
+    default     = "t3.medium"
+}
+
 variable "az" {
   description = "Availability Zone"
   type        = string

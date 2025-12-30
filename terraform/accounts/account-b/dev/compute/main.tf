@@ -79,30 +79,30 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.1.11.11"
         }
-        /*
         auth_service = {
-            instance_type = var.instance_type
+            instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.10"
         }
-        machine_service = {
-            instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.12"
-        }
         payment_service = {
-            instance_type = var.instance_type
+            instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.13"
         }
         delivery_service = {
-            instance_type = var.instance_type
+            instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.14"
+        }
+        /*
+        machine_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
+            public_ip     = false
+            private_ip    = "10.1.11.12"
         }
         logs_inf_service = {
             instance_type = var.instance_type

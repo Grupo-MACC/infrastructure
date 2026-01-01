@@ -197,6 +197,11 @@ ansible-db-init:
 	$(MAKE) ansible-consul-register-rds RDS_HOST=$$RDS_HOST; \
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/db-init.yml
 
+
+# =========================
+# Crear clusters específicos
+# =========================
+
 create-rabbit-cluster:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
@@ -204,3 +209,9 @@ create-rabbit-cluster:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=rabbitmq_service" --extra-vars "compose_file=docker-compose-node1.yaml"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=rabbitmq_service2" --extra-vars "compose_file=docker-compose-node2.yaml"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/rabbit-connect-cluster.yml
+
+create-consul-cluster:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service" --extra-vars "compose_file=docker-compose-node1.yaml"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service2" --extra-vars "compose_file=docker-compose-node2.yaml"

@@ -71,6 +71,14 @@ resource "aws_security_group" "micro_sg" {
         cidr_blocks = [data.aws_vpc.selected.cidr_block]
     }
 
+    ingress {
+        description = "Puerto 8600 para Consul DNS"
+        from_port   = 8600
+        to_port     = 8600
+        protocol    = "udp"
+        cidr_blocks = [data.aws_vpc.selected.cidr_block]
+    }
+
     egress {
         from_port   = 0
         to_port     = 0

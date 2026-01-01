@@ -23,6 +23,6 @@ resource "aws_db_instance" "this" {
   publicly_accessible    = var.publicly_accessible
 
   skip_final_snapshot = var.skip_final_snapshot
-
+  multi_az = var.multi_az
   tags = var.tags
 }

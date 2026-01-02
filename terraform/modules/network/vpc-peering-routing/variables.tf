@@ -1,4 +1,4 @@
-variable "private_route_table_id" {
+/*variable "private_route_table_id" {
   description = "ID of the local VPC's private route table"
   type        = string
 }
@@ -25,5 +25,25 @@ variable "private_subnet_id" {
 
 variable "public_subnet_id" {
   description = "ID of the local VPC's public subnet"
+  type        = string
+}*/
+
+variable "private_route_table_ids" {
+  description = "Route tables privadas (una por AZ)"
+  type        = list(string)
+}
+
+variable "public_route_table_id" {
+  description = "Route table pública compartida"
+  type        = string
+}
+
+variable "peer_vpc_cidr_blocks" {
+  description = "CIDRs de la VPC remota"
+  type        = list(string)
+}
+
+variable "vpc_peering_connection_id" {
+  description = "ID del VPC Peering"
   type        = string
 }

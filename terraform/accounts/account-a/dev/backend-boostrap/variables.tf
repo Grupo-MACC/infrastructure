@@ -12,5 +12,5 @@ variable "bucket_name" {
 variable "allowed_account_arn" {
     description = "The ARN of the allowed account for backend module"
     type        = string
-    default     = "arn:aws:iam::901752335700:root"
+    default     = "arn:aws:iam::651450594260:root"
 }

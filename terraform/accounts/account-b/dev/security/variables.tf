@@ -8,3 +8,9 @@ variable "allowed_ssh_cidr" {
     type        = list(string)
     default     = ["0.0.0.0/0"]
 }
+
+variable "internal_cidr" {
+    description = "The CIDR block for internal VPC communication"
+    type        = list(string)
+    default     = ["10.0.0.0/16", "10.1.0.0/16"]
+}

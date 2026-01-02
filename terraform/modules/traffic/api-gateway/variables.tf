@@ -21,6 +21,7 @@ variable "services" {
     base_path   = string   # order, payment, etc
     vpc_link_id = string
     listener_arn = string
+    nlb_dns     = string
   }))
 }
 

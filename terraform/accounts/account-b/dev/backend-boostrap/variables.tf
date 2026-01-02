@@ -6,11 +6,11 @@ variable "environment" {
 variable "bucket_name" {
     description = "The name of the S3 bucket for backend module"
     type        = string
-    default     = "tf-states-macc-grupo2-2"
+    default     = "tf-states-macc-grupo2-aimar"
 }
 
 variable "allowed_account_arn" {
     description = "The ARN of the allowed account for backend module"
     type        = string
-    default     = "arn:aws:iam::615136140268:root" 
+    default     = "arn:aws:iam::891377130490:root" 
 }

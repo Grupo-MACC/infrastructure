@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2-2"
+    bucket = "tf-states-macc-grupo2-aimar"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2-2"
+    bucket = "tf-states-macc-grupo2-aimar"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -29,7 +29,7 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-module "rds_mysql" {
+/*module "rds_mysql" {
   source = "../../../../modules/compute/rds"  # Ruta a tu módulo
 
   identifier      = "db"
@@ -50,7 +50,7 @@ module "rds_mysql" {
   publicly_accessible = false
   
   skip_final_snapshot = true  # false en producción
-}
+}*/
 
 module "microservices" {
     source = "../../../../modules/compute/ec2"
@@ -69,7 +69,7 @@ module "microservices" {
         }
         warehouse_service = {
             instance_type = var.instance_type
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.11"
         }

@@ -11,6 +11,7 @@ NETWORK_DIR  := $(BASE_DIR)/network
 PEERING_DIR  := $(BASE_DIR)/vpc-peering
 SECURITY_DIR := $(BASE_DIR)/security
 COMPUTE_DIR  := $(BASE_DIR)/compute
+SCALE_DIR	 := $(BASE_DIR)/scale
 
 TF := terraform
 
@@ -71,8 +72,11 @@ help:
 .PHONY: all backend network peering security compute launch
 
 all: backend network peering security compute launch
+all+scale: backend network peering security compute launch scale
 
 all-1vpc: backend network security compute launch
+all-1vpc+scale: backend network security compute launch scale
+
 
 backend:
 	@echo ">>> Deploying backend"
@@ -104,6 +108,11 @@ compute:
 	$(TF) init && \
 	$(TF) apply -auto-approve
 
+scale:
+	@echo ">>> Scaling compute"
+	cd $(SCALE_DIR) && \
+	$(TF) init && \
+	$(TF) apply -auto-approve
 
 # =========================
 # Destroy (orden inverso)
@@ -142,6 +151,12 @@ destroy-backend:
 	$(TF) init && \
 	$(TF) destroy -auto-approve
 
+destroy-scale:
+	@echo ">>> Destroying scale"
+	cd $(SCALE_DIR) && \
+	$(TF) init && \
+	$(TF) destroy -auto-approve
+
 # =========================
 # Ansible
 # =========================
@@ -152,8 +167,8 @@ VARS_FILE = inventories/dev_vars.yaml
 setup:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
-	$(MAKE) create-consul-cluster
-	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=rabbitmq_service"
+#	$(MAKE) create-consul-cluster
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=globalservices"
 	$(MAKE) ansible-db-init
 
 sleep:
@@ -182,11 +197,14 @@ ansible-consul-register-rds:
 # Debe tener permisos de ejecución: chmod +x ansible/roles/db/scripts/get-rds-host.sh
 	@RDS_HOST=$$(ansible/roles/db/scripts/get-rds-host.sh); \
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/consul-register-rds.yml
-ansible-consul-register:
-	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml
+consul-register:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=microservices"
 
 # =========================
 # Utils para debugging
+setup-docker:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+
 load-repo:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
 

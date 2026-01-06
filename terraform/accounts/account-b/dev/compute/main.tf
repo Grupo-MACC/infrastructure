@@ -60,25 +60,24 @@ module "microservices" {
     sg_id = data.terraform_remote_state.security.outputs.microservices_sg_id
     
     instances = { # 10.1.11.10 -> 10.1.11.250
-        /*
         rabbitmq_service = {
             instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.30"
         }
-        rabbitmq_service2 = {
-            instance_type = var.instance_type_big
-            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
-            public_ip     = false
-            private_ip    = "10.1.11.31"
-        }
-        */
         consul_service = {
             instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.40"
+        }
+        /*
+        rabbitmq_service2 = {
+            instance_type = var.instance_type_big
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
+            public_ip     = false
+            private_ip    = "10.1.11.31"
         }
         consul_service2 = {
             instance_type = var.instance_type_big
@@ -86,7 +85,6 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.1.11.41"
         }
-        /*
         order_service = {
             instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
@@ -117,11 +115,20 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.1.11.12"
         }
+        */
+        logger_service = {
+            instance_type = var.instance_type
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
+            public_ip     = false
+            private_ip    = "10.1.12.15"
+        }
+        /*
+        */
         logs_inf_service = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
             public_ip     = false
             private_ip    = "10.1.12.50"
-        }*/
+        }
     }
 }

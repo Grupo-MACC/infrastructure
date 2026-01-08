@@ -21,3 +21,9 @@ variable "key_name" {
     description = "The key pair name to use for the EC2 instances"
     type        = string
 }
+
+variable "iam_instance_profile" {
+    description = "The IAM instance profile name to associate with the EC2 instances"
+    type        = string
+    default     = "LabInstanceProfile"
+}

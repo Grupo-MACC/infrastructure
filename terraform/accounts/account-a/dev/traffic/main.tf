@@ -58,16 +58,6 @@ data "terraform_remote_state" "compute_peer" {
     }
 }
 
-data "terraform_remote_state" "traffic_peer" {
-  backend = "s3"
-
-    config = {
-        bucket = "tf-states-macc-grupo2-aimar"
-        key    = "traffic/dev/terraform.tfstate"
-        region = "us-east-1"
-    }
-}
-
 locals {
     microservices_alb_rules = {
         orders = {
@@ -90,6 +80,11 @@ locals {
             paths   = ["/machine*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["machines"]
         }*/
+        auths = {
+            priority = 50
+            paths   = ["/auth*"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["auth_service"]
+        }
     }  
 }
 
@@ -146,7 +141,7 @@ module "api_gateway" {
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
     }
-    /*payments = {
+    payments = {
       base_path     = "payment"
       vpc_link_id   = "microservices_vpc"
       nlb_dns    = null
@@ -163,21 +158,19 @@ module "api_gateway" {
       vpc_link_id   = "microservices_vpc"
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
-    }*/
-
-    # Servicios en otra VPC / otra cuenta → HTTP_PROXY usando DNS del NLB
+    }
     auths = {
       base_path   = "auth"
-      vpc_link_id = null
-      nlb_dns     = data.terraform_remote_state.traffic_peer.outputs.load_balancer_dns
-      listener_arn = null
+      vpc_link_id = "microservices_vpc"
+      nlb_dns     = null
+      listener_arn = module.microservice_internal_alb.listeners["http"]
     }
-    warehouses = {
+    /*warehouses = {
       base_path   = "warehouse"
-      vpc_link_id = null
+      vpc_link_id = "microservices_vpc"
       nlb_dns     = data.terraform_remote_state.traffic_peer.outputs.load_balancer_dns
-      listener_arn = null
-    }
+      listener_arn = module.microservice_internal_alb.listeners["http"]
+    }*/
   }
 
   stage = {

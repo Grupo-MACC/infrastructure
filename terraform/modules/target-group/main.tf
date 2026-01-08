@@ -20,4 +20,5 @@ resource "aws_lb_target_group_attachment" "this" {
   target_group_arn = aws_lb_target_group.this.arn
   target_id        = each.value.id
   port             = each.value.port
+  availability_zone = each.value.external ? "all" : null
 }

@@ -17,13 +17,14 @@ variable "protocol" {
 
 variable "target_type" {
   type    = string
-  default = "instance"
+  default = "ip"
 }
 
 variable "targets" {
   type = map(object({
     id   = string
     port = number
+    external = optional(bool, false)
   }))
 }
 

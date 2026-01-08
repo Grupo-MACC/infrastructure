@@ -1,3 +1,6 @@
 output "tg_arn_map" {
-  value = { for k, m in module.target_groups : k => m.tg_arn }
+  value = merge(
+    { for k, m in module.target_groups_internal : k => m.tg_arn },
+    { for k, m in module.target_groups_external : k => m.tg_arn }
+  )
 }

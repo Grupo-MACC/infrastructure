@@ -64,19 +64,11 @@ resource "aws_security_group" "micro_sg" {
     }
 
     ingress {
-        description     = "Traffic from internal ALB"
+        description     = "Traffic from internal CIDR"
         from_port       = 0
         to_port         = 65535
         protocol        = "tcp"
-        security_groups = [aws_security_group.load_balancer_sg.id]
-    }
-
-    ingress {
-        description     = "Traffic from internal ALB"
-        from_port       = 0
-        to_port         = 65535
-        protocol        = "tcp"
-        security_groups = [aws_security_group.external_load_balancer_sg.id]
+        cidr_blocks = var.internal_cidr
     }
 
     ingress {
@@ -84,7 +76,7 @@ resource "aws_security_group" "micro_sg" {
         from_port   = 8600
         to_port     = 8600
         protocol    = "udp"
-        cidr_blocks = [data.aws_vpc.selected.cidr_block]
+        cidr_blocks = var.internal_cidr
     }
 
     egress {
@@ -97,26 +89,6 @@ resource "aws_security_group" "micro_sg" {
     tags = {
         Name = "${var.name}-micro-sg"
     }
-}
-
-resource "aws_security_group" "external_load_balancer_sg" {
-  name        = "${var.name}-external-alb-sg"
-  description = "Security group for external ALB"
-  vpc_id      = data.aws_vpc.selected.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
 resource "aws_security_group" "load_balancer_sg" {
@@ -149,7 +121,7 @@ resource "aws_security_group" "api_gateway_vpc_link_sg" {
   vpc_id      = data.aws_vpc.selected.id
 
   tags = {
-    Name = "${var.name}-api-gateway-vpc-link-sg"
+    Name = "${var.name}-api-gateway-vpc-link-sg" 
   }
 }
 

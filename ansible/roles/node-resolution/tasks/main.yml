@@ -1,0 +1,6 @@
+- name: Asegurar entradas de RabbitMQ en /etc/hosts
+  become: yes
+  blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} ANSIBLE RABBITMQ CLUSTER"
+    block: "{{ lookup('file', 'hosts') }}"

@@ -11,6 +11,7 @@ NETWORK_DIR  := $(BASE_DIR)/network
 PEERING_DIR  := $(BASE_DIR)/vpc-peering
 SECURITY_DIR := $(BASE_DIR)/security
 COMPUTE_DIR  := $(BASE_DIR)/compute
+SCALE_DIR	 := $(BASE_DIR)/scale
 
 TF := terraform
 
@@ -24,34 +25,58 @@ TF := terraform
 # =========================
 .PHONY: help
 help:
-	@echo ""
+	@echo
+	@echo "🚀 Infraestructura - Gestión con Terraform y Ansible"
+	@echo
 	@echo "Uso:"
 	@echo "  make <target> [ACCOUNT=account-a] [ENV=dev]"
-	@echo ""
-	@echo "Targets disponibles:"
-	@echo "  help              Muestra esta ayuda"
-	@echo "  all               Ejecuta todo en orden: backend → network → peering → security → compute"
-	@echo "  backend           Despliega el backend (S3/Dynamo para Terraform state)"
-	@echo "  network           Despliega la red (VPC)"
-	@echo "  peering   		   Despliega el peering (VPC Peering)"
-	@echo "  security          Despliega seguridad (security groups, etc.)"
-	@echo "  compute           Despliega cómputo (EC2, bastion, etc.)"
-	@echo "  aws-credentials   Abre ~/.aws/credentials"
-	@echo ""
-	@echo "Ejemplos:"
+	@echo
+	@echo "📌 Variables (opcionales):"
+	@echo "  ACCOUNT   Cuenta de AWS (por defecto: account-a)"
+	@echo "  ENV       Entorno (por defecto: dev)"
+	@echo
+	@echo "🔧 Terraform - Despliegue"
+	@echo "  all            : Backend → Red → Peering → Seguridad → Cómputo → Servicios"
+	@echo "  all-1vpc       : Backend → Red → Seguridad → Cómputo → Servicios (sin peering)"
+	@echo "  backend        : Crea bucket S3 + DynamoDB para estado de Terraform"
+	@echo "  network        : Despliega VPC, subredes, rutas, NAT, etc."
+	@echo "  peering        : Configura VPC Peering (entre cuentas o regiones)"
+	@echo "  security       : Grupos de seguridad (Security Groups)"
+	@echo "  compute        : Instancias EC2, bastion, microservicios"
+	@echo
+	@echo "🔥 Terraform - Destrucción (orden inverso)"
+	@echo "  destroy-all    : Destruye todo (cómputo → seguridad → peering → red → backend)"
+	@echo "  destroy-compute|security|peering|network|backend"
+	@echo
+	@echo "🐳 Ansible - Configuración y despliegue"
+	@echo "  setup          : Configura Docker + clona repos + despliega globalservices + init DB"
+	@echo "  deploy-services: Despliega y registra servicios en Consul (broker, auth, etc.)"
+	@echo "  launch         : Ejecuta 'setup', espera y luego 'deploy-services'"
+	@echo
+	@echo "🔍 Utilidades"
+	@echo "  load-repo      : Clona repositorio del microservicio"
+	@echo "  sleep          : Pausa para esperar servicios (ej: RDS listo)"
+	@echo "  ansible-db-init: Inicializa bases de datos en RDS (order, auth, payment, etc.)"
+	@echo "  ansible-consul-register: Registra servicios actuales en Consul"
+	@echo "  ansible-consul-register-rds: Registra RDS en Consul usando endpoint dinámico"
+	@echo
+	@echo "💡 Ejemplos:"
 	@echo "  make all"
 	@echo "  make network ACCOUNT=account-b ENV=dev"
-	@echo "  make aws-credentials"
-	@echo ""
+	@echo "  make destroy-all ACCOUNT=account-a"
+	@echo
 
 # =========================
 # Targets principales
 # =========================
-.PHONY: all backend network peering security compute ansible-launch
+.PHONY: all backend network peering security compute launch
 
-all: backend network peering security compute ansible-launch
+all: backend network peering security compute launch
+all+scale: backend network peering security compute launch scale
 
-all-1vpc: backend network security compute ansible-launch
+all-1vpc: backend network security compute launch
+all-1vpc+scale: backend network security compute launch scale
+
 
 backend:
 	@echo ">>> Deploying backend"
@@ -83,6 +108,11 @@ compute:
 	$(TF) init && \
 	$(TF) apply -auto-approve
 
+scale:
+	@echo ">>> Scaling compute"
+	cd $(SCALE_DIR) && \
+	$(TF) init && \
+	$(TF) apply -auto-approve
 
 # =========================
 # Destroy (orden inverso)
@@ -121,26 +151,86 @@ destroy-backend:
 	$(TF) init && \
 	$(TF) destroy -auto-approve
 
+destroy-scale:
+	@echo ">>> Destroying scale"
+	cd $(SCALE_DIR) && \
+	$(TF) init && \
+	$(TF) destroy -auto-approve
+
 # =========================
 # Ansible
 # =========================
 INVENTORY = inventories/dev.ini
 VARS_FILE = inventories/dev_vars.yaml
 
-# Debe tener permisos de ejecución: chmod +x ansible/roles/db/scripts/get-rds-host.sh
-ansible-db-init:
-	RDS_HOST=$$(ansible/roles/db/scripts/get-rds-host.sh) && \
-	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/db-init.yml
 
-ansible-consul-register:
-	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml
-
-ansible-launch:
+setup:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+#	$(MAKE) create-consul-cluster
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=globalservices"
+	$(MAKE) ansible-db-init
+
+sleep:
 	cd ansible && ansible-playbook playbooks/sleep.yml
+
+deploy-services:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=broker"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=operativeservices"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=operativeservices,authentication"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=authentication"
+
+# =========================
+# Launch all services
+# =========================
+launch:
+	$(MAKE) setup
+	$(MAKE) sleep
+	$(MAKE) deploy-services
+
+# =========================	
+# Utils
+# =========================
+
+# Utils para registro en consul
+ansible-consul-register-rds:
+# Debe tener permisos de ejecución: chmod +x ansible/roles/db/scripts/get-rds-host.sh
+	@RDS_HOST=$$(ansible/roles/db/scripts/get-rds-host.sh); \
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/consul-register-rds.yml
+consul-register:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/consul-register.yml -e "target_hosts=microservices"
+
+# =========================
+# Utils para debugging
+setup-docker:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+
+load-repo:
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+
+# =========================
+# Utils para inicialización de base de datos
+ansible-db-init:
+	@RDS_HOST=$$(ansible/roles/db/scripts/get-rds-host.sh); \
+	echo "RDS_HOST=$$RDS_HOST"; \
+	$(MAKE) ansible-consul-register-rds RDS_HOST=$$RDS_HOST; \
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" --extra-vars "rds_host=$$RDS_HOST" playbooks/db-init.yml
+
+
+# =========================
+# Crear clusters específicos
+# =========================
+
+create-rabbit-cluster:
+#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/rabbit-node-resolution.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=rabbitmq_service" --extra-vars "compose_file=docker-compose-node1.yaml"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=rabbitmq_service2" --extra-vars "compose_file=docker-compose-node2.yaml"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/rabbit-connect-cluster.yml
+
+create-consul-cluster:
+#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service" --extra-vars "compose_file=docker-compose-node1.yaml"
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service2" --extra-vars "compose_file=docker-compose-node2.yaml"

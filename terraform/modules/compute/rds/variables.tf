@@ -78,6 +78,12 @@ variable "skip_final_snapshot" {
   default     = false
 }
 
+variable "multi_az" {
+  description = "Enable Multi-AZ deployment"
+  type        = bool
+  default     = true
+}
+
 variable "sg_id" {
   description = "Security group ID for the RDS instance"
   type        = string

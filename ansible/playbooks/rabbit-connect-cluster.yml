@@ -1,0 +1,7 @@
+- name: Conectar nodos RabbitMQ en cluster
+  hosts: rabbitmq_service2
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - connect-cluster

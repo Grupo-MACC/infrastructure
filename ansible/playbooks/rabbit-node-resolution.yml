@@ -1,0 +1,7 @@
+- name: Editar /etc/hosts para RabbitMQ cluster
+  hosts: broker
+  become: yes
+  vars_files:
+    - ../inventories/dev_vars.yaml
+  roles:
+    - node-resolution

@@ -72,24 +72,24 @@ locals {
     microservices_alb_rules = {
         orders = {
             priority = 10
-            paths   = ["/order/*"]
+            paths   = ["/order*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["orders"]
         }
-        payments = {
+        /*payments = {
             priority = 20
-            paths   = ["/payment/*"]
+            paths   = ["/payment*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["payments"]
         }
         deliveries = {
             priority = 30
-            paths   = ["/delivery/*"]
+            paths   = ["/delivery*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["deliveries"]
         }
         machines = {
             priority = 40
-            paths   = ["/machine/*"]
+            paths   = ["/machine*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["machines"]
-        }
+        }*/
     }  
 }
 
@@ -146,7 +146,7 @@ module "api_gateway" {
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
     }
-    payments = {
+    /*payments = {
       base_path     = "payment"
       vpc_link_id   = "microservices_vpc"
       nlb_dns    = null
@@ -163,7 +163,7 @@ module "api_gateway" {
       vpc_link_id   = "microservices_vpc"
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
-    }
+    }*/
 
     # Servicios en otra VPC / otra cuenta → HTTP_PROXY usando DNS del NLB
     auths = {

@@ -49,7 +49,7 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.0.12.11"
         }
-        machine_service_1 = {
+        /*machine_service_1 = {
             instance_type = var.instance_type
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
@@ -84,7 +84,7 @@ module "microservices" {
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
             public_ip     = false
             private_ip    = "10.0.12.14"
-        }
+        }*/
     }
 }
 

@@ -1,9 +1,15 @@
+############################
+# API
+############################
 resource "aws_apigatewayv2_api" "this" {
   name          = var.api.name
   protocol_type = var.api.protocol_type
   tags          = var.api.tags
 }
 
+############################
+# VPC LINKS
+############################
 resource "aws_apigatewayv2_vpc_link" "this" {
   for_each = var.vpc_links
 
@@ -13,57 +19,101 @@ resource "aws_apigatewayv2_vpc_link" "this" {
   tags               = each.value.tags
 }
 
-# Integraciones con VPC Link
-resource "aws_apigatewayv2_integration" "this" {
-  for_each = var.services
+############################
+# ========================
+# INTEGRACIONES INTERNAS
+# (VPC LINK + ALB LISTENER)
+# ========================
+############################
+resource "aws_apigatewayv2_integration" "internal" {
+  for_each = {
+    for k, v in var.services : k => v
+    if v.vpc_link_id != null
+  }
 
-  api_id                 = aws_apigatewayv2_api.this.id
-  integration_type       = "HTTP_PROXY"
-  integration_method     = "ANY"
+  api_id             = aws_apigatewayv2_api.this.id
+  integration_type   = "HTTP_PROXY"
+  integration_method = "ANY"
 
-  # Diferenciamos servicios con VPC_LINK vs externos
-  integration_uri        = each.value.vpc_link_id != null ? each.value.listener_arn : "http://${each.value.nlb_dns}"
+  integration_uri = each.value.listener_arn
 
-  connection_type        = each.value.vpc_link_id != null ? "VPC_LINK" : "INTERNET"
-  connection_id          = each.value.vpc_link_id != null ? aws_apigatewayv2_vpc_link.this[each.value.vpc_link_id].id : null
+  connection_type = "VPC_LINK"
+  connection_id   = aws_apigatewayv2_vpc_link.this[each.value.vpc_link_id].id
+
   payload_format_version = "1.0"
 }
 
-# Integraciones externas (sin VPC Link)
+############################
+# ========================
+# INTEGRACIONES EXTERNAS
+# (DNS público)
+# ========================
+############################
 resource "aws_apigatewayv2_integration" "external" {
   for_each = {
     for k, v in var.services : k => v
     if v.vpc_link_id == null
   }
 
-  api_id                 = aws_apigatewayv2_api.this.id
-  integration_type       = "HTTP_PROXY"
-  integration_method     = "ANY"
-  integration_uri        = "http://${each.value.nlb_dns}"  # apunta al NLB público
+  api_id             = aws_apigatewayv2_api.this.id
+  integration_type   = "HTTP_PROXY"
+  integration_method = "ANY"
+
+  # ✅ incluir el base_path
+  integration_uri = "http://${each.value.nlb_dns}/${each.value.base_path}"
+
   payload_format_version = "1.0"
 }
 
-# Rutas
-resource "aws_apigatewayv2_route" "this" {
-  for_each = {
-    for k, v in var.services : k => v
-  }
+############################
+# ========================
+# RUTAS INTERNAS
+# ========================
+############################
+resource "aws_apigatewayv2_route" "internal_base" {
+  for_each = aws_apigatewayv2_integration.internal
 
   api_id    = aws_apigatewayv2_api.this.id
-  route_key = "ANY /${each.value.base_path}"
-  target = each.value.vpc_link_id != null ? "integrations/${aws_apigatewayv2_integration.this[each.key].id}" : "integrations/${aws_apigatewayv2_integration.external[each.key].id}"
-
-
+  route_key = "ANY /${var.services[each.key].base_path}"
+  target    = "integrations/${each.value.id}"
 }
 
+resource "aws_apigatewayv2_route" "internal_proxy" {
+  for_each = aws_apigatewayv2_integration.internal
 
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "ANY /${var.services[each.key].base_path}/{proxy+}"
+  target    = "integrations/${each.value.id}"
+}
+
+############################
+# ========================
+# RUTAS EXTERNAS
+# ========================
+############################
+resource "aws_apigatewayv2_route" "external_base" {
+  for_each = aws_apigatewayv2_integration.external
+
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "ANY /${var.services[each.key].base_path}"
+  target    = "integrations/${each.value.id}"
+}
+
+resource "aws_apigatewayv2_route" "external_proxy" {
+  for_each = aws_apigatewayv2_integration.external
+
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "ANY /${var.services[each.key].base_path}/{proxy+}"
+  target    = "integrations/${each.value.id}"
+}
+
+############################
+# STAGE
+############################
 resource "aws_apigatewayv2_stage" "this" {
   api_id      = aws_apigatewayv2_api.this.id
   name        = "$default"
   auto_deploy = true
 
-  tags = {
-    Environment = "dev"
-  }
+  tags = var.stage.tags
 }
-

@@ -1,4 +1,4 @@
-output "api_id" {
+/*output "api_id" {
   value = aws_apigatewayv2_api.this.id
 }
 
@@ -16,4 +16,4 @@ output "integration_ids" {
   value = {
     for k, v in aws_apigatewayv2_integration.this : k => v.id
   }
-}
+}*/

@@ -1,0 +1,7 @@
+all:
+  hosts:
+    ec2_1:
+      ansible_host: ec2-100-53-18-53.compute-1.amazonaws.com
+      ansible_user: admin
+      ansible_ssh_private_key_file: ~/.ssh/vockey.pem
+

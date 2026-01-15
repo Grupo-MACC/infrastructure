@@ -1,0 +1,10 @@
+---
+- name: Basic EC2 hardening
+  hosts: all
+  become: true
+  collections:
+    - devsec.hardening
+
+  roles:
+    - os_hardening
+    - ssh_hardening

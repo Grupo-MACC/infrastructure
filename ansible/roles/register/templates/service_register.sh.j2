@@ -15,12 +15,15 @@ META='{{ service_meta | default({}) | to_json }}'
 
 # Check HTTP calculado 100% en Jinja (sin mezclar Bash)
 {% if service_name == 'rabbitmq' %}
-CHECK_HTTP="http://{{ ansible_facts['default_ipv4']['address'] }}:15672/api/healthchecks/node"
+CHECK_HTTP="https://{{ ansible_facts['default_ipv4']['address'] }}:15672/api/healthchecks/node"
 {% else %}
-CHECK_HTTP="http://{{ ansible_facts['default_ipv4']['address'] }}:{{ service_port }}/docs"
+CHECK_HTTP="https://{{ ansible_facts['default_ipv4']['address'] }}:{{ service_port }}/docs"
 {% endif %}
 
-curl -s -X PUT "http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
+curl --fail --silent --show-error \
+  --cacert /home/ubuntu/app/certs/ca.pem \
+  -k \
+  -X PUT "https://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
   -H "Content-Type: application/json" \
   -d "{
     \"ID\": \"${SERVICE_ID}\",

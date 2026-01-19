@@ -167,9 +167,9 @@ VARS_FILE = inventories/dev_vars.yaml
 setup:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
-#	$(MAKE) create-consul-cluster
+	$(MAKE) create-rabbit-cluster
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=globalservices"
-	$(MAKE) ansible-db-init
+#	$(MAKE) ansible-db-init
 
 sleep:
 	cd ansible && ansible-playbook playbooks/sleep.yml

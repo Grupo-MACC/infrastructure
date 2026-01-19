@@ -29,29 +29,6 @@ module "bastion" {
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
 }
 
-/*module "rds_mysql" {
-  source = "../../../../modules/compute/rds"  # Ruta a tu módulo
-
-  identifier      = "db"
-  engine          = "mysql"
-  engine_version  = "8.0"
-  instance_class  = "db.t3.micro"
-  
-  allocated_storage = 20
-  storage_encrypted = true
-  
-  database_name   = "app"
-  master_username = "admin"
-  master_password = "maccadmin"  # Mejor usar AWS Secrets Manager
-
-  vpc_id              = data.terraform_remote_state.network.outputs.vpc_id
-  subnet_ids          = data.terraform_remote_state.network.outputs.private_subnet_id  # Subnets privadas
-  sg_id               = data.terraform_remote_state.security.outputs.rds_sg_id
-  publicly_accessible = false
-  
-  skip_final_snapshot = true  # false en producción
-}*/
-
 module "microservices" {
     source = "../../../../modules/compute/ec2"
 

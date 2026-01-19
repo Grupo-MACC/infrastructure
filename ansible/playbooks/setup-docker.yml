@@ -2,8 +2,8 @@
   hosts: 
     - microservices
     - consul
-    - rabbitmq
-    - auth
+    - broker
+    - authentication
   become: yes
   roles:
     - docker

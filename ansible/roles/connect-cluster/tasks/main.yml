@@ -29,6 +29,11 @@
     - name: Reset RabbitMQ node 2
       command: docker exec rabbitmq-2 rabbitmqctl reset
 
+    - name: Forget node 2 from node 1 (cleanup inconsistent state)
+      delegate_to: rabbitmq_service
+      command: docker exec rabbitmq-1 rabbitmqctl forget_cluster_node rabbit@rabbitmq-2
+      ignore_errors: yes
+
     - name: Join node 2 to cluster with node 1
       command: docker exec rabbitmq-2 rabbitmqctl join_cluster rabbit@rabbitmq-1
 

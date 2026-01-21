@@ -13,7 +13,7 @@ SERVICE_ADDRESS="{{ service_address }}"
 TAGS='["database", "rds", "mysql"]'
 META='{"type": "rds", "engine": "mysql"}'
 
-curl -s -X PUT "http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
+curl -k -X PUT "https://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register" \
   -H "Content-Type: application/json" \
   -d "{
     \"ID\": \"${SERVICE_ID}\",

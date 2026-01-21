@@ -1,9 +1,6 @@
 - name: Preparar entorno para despliegue de microservicio
   hosts: 
     - microservices
-    - consul
-    - broker
-    - authentication
   become: yes
   roles:
     - docker

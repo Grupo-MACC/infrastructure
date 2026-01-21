@@ -23,4 +23,5 @@
     - payment_db
     - delivery_db
     - warehouse_db
+    - machine_db
   run_once: true

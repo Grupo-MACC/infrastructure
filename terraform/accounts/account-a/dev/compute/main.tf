@@ -18,14 +18,14 @@ data "terraform_remote_state" "security" {
   }
 }
 
-data "terraform_remote_state" "compute_peer" {
+/*data "terraform_remote_state" "compute_peer" {
   backend = "s3"
   config = {
     bucket = "tf-states-macc-grupo2-aimar"
     key    = "compute/dev/terraform.tfstate"
     region = "us-east-1"
   }
-}
+}*/
 
 module "bastion" {
   source        = "../../../../modules/compute/bastion"
@@ -130,10 +130,13 @@ module "target_groups_internal" {
   name        = "${each.key}-tg-dev"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   port        = 5000
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   target_type = "ip"
 
-  health_check_path = each.value.health
+  health_check_path     = each.value.health
+  health_check_protocol = "HTTPS"
+  health_check_port     = "5000"
+  health_check_matcher  = "200"
 
   targets = {
     for k in each.value.instances :
@@ -145,7 +148,7 @@ module "target_groups_internal" {
   }
 }
 
-module "target_groups_external" {
+/*module "target_groups_external" {
   source = "../../../../modules/target-group"
 
   for_each = local.vpc_b_services
@@ -165,4 +168,4 @@ module "target_groups_external" {
       external = true
     }
   }
-}
+}*/

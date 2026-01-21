@@ -32,3 +32,18 @@ variable "health_check_path" {
   type    = string
   default = "/health"
 }
+
+variable "health_check_protocol" {
+  type    = string
+  default = "HTTP"
+}
+
+variable "health_check_port" {
+  type    = string
+  default = "traffic-port"
+}
+
+variable "health_check_matcher" {
+  type    = string
+  default = "200"
+}

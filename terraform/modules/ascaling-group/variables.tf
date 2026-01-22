@@ -51,3 +51,8 @@ variable "user_data" {
   type        = string
   default     = ""
 }
+
+variable "target_group_arns" {
+  description = "Target group ARNs asociados al ASG"
+  type        = list(string)
+}

@@ -71,6 +71,7 @@ module "microservices" {
         public_ip     = false
         private_ip    = "10.0.12.12"
       }
+      /*
       payment_service_1 = {
         instance_type = var.instance_type
         subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
@@ -82,7 +83,7 @@ module "microservices" {
         subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
         public_ip     = false
         private_ip    = "10.0.12.13"
-      }
+      }*/
       delivery_service_1 = {
         instance_type = var.instance_type
         subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
@@ -145,6 +146,21 @@ module "target_groups_internal" {
       port     = 5000
       external = false
     }
+  }
+}
+
+resource "aws_lb_target_group" "payments_asg" {
+  name        = "payments-asg-tg-dev"
+  port        = 5000
+  protocol    = "HTTPS"
+  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+  target_type = "instance"
+
+  health_check {
+    path     = "/payment/health"
+    port     = "5000"
+    protocol = "HTTPS"
+    matcher  = "200"
   }
 }
 

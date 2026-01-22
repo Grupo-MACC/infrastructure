@@ -7,7 +7,7 @@ variable order_ami_final {
 variable order_ami {
   description = "AMI ID for the order service"
   type        = string
-  default     = "ami-06d1a5f51f170188f"
+  default     = "ami-012cd67fc2233dcd1"
 }
 
 variable machine_ami {
@@ -18,7 +18,7 @@ variable machine_ami {
 variable payment_ami {
   description = "AMI ID for the payment service"
   type        = string
-  default     = "ami-049f23f4483987c8e"
+  default     = "ami-0c8e5ed8a1e5d27f5"
 }
 variable "delivery_ami" {
   description = "AMI ID for the delivery service"
@@ -34,6 +34,11 @@ variable "instance_type_big" {
     description = "The instance type for the bastion host"
     type        = string
     default     = "t3.medium"
+}
+variable "instance_type" {
+    description = "The instance type for the bastion host"
+    type        = string
+    default     = "t3.micro"
 }
 
 variable "az" {

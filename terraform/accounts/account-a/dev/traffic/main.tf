@@ -35,10 +35,15 @@ locals {
             paths   = ["/order*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["orders"]
         }
-        payments = {
+        /*payments = {
             priority = 20
             paths   = ["/payment*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["payments"]
+        }*/
+        payments = {
+            priority = 20
+            paths   = ["/payment*"]
+            target_group_arn =     data.terraform_remote_state.compute.outputs.payments_asg_target_group_arn
         }
         deliveries = {
             priority = 30

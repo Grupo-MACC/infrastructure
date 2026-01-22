@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "tf-states-macc-aimar"
+    bucket         = "tf-states-macc-grupo2-account-a"
     key            = "scale/dev/terraform.tfstate"
     region         = "us-east-1"
   }

@@ -12,7 +12,7 @@ PEERING_DIR  := $(BASE_DIR)/vpc-peering
 SECURITY_DIR := $(BASE_DIR)/security
 COMPUTE_DIR  := $(BASE_DIR)/compute
 SCALE_DIR	 := $(BASE_DIR)/scale
-
+TRAFFIC_DIR	 := $(BASE_DIR)/traffic
 TF := terraform
 
 # =========================
@@ -71,8 +71,8 @@ help:
 # =========================
 .PHONY: all backend network peering security compute launch
 
-all: backend network peering security compute launch
-all+scale: backend network peering security compute launch scale
+all: backend network peering security compute traffic launch
+all+scale: backend network peering security compute traffic launch scale
 
 all-1vpc: backend network security compute launch
 all-1vpc+scale: backend network security compute launch scale
@@ -114,12 +114,18 @@ scale:
 	$(TF) init && \
 	$(TF) apply -auto-approve
 
+traffic:
+	@echo ">>> Deploying traffic"
+	cd $(TRAFFIC_DIR) && \
+	$(TF) init && \
+	$(TF) apply -auto-approve
+
 # =========================
 # Destroy (orden inverso)
 # =========================
 .PHONY: destroy-all destroy-backend destroy-network destroy-peering destroy-security destroy-compute
 
-destroy-all: destroy-compute destroy-security destroy-peering destroy-network destroy-backend
+destroy-all: destroy-traffic destroy-compute destroy-security destroy-peering destroy-network destroy-backend
 
 destroy-compute:
 	@echo ">>> Destroying compute"
@@ -157,6 +163,12 @@ destroy-scale:
 	$(TF) init && \
 	$(TF) destroy -auto-approve
 
+destroy-traffic:
+	@echo ">>> Destroying traffic"
+	cd $(TRAFFIC_DIR) && \
+	$(TF) init && \
+	$(TF) destroy -auto-approve
+
 # =========================
 # Ansible
 # =========================
@@ -169,7 +181,7 @@ setup:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=dns"
 	$(MAKE) ansible-db-init
-    $(MAKE) create-rabbit-cluster
+	$(MAKE) create-rabbit-cluster
 
 sleep:
 	cd ansible && ansible-playbook playbooks/sleep.yml

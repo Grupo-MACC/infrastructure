@@ -165,8 +165,9 @@ module "target_groups_external" {
   health_check_matcher  = "200"
 
   targets = {
-    "${each.value.instances}" = {
-      id       = each.value.instances
+    for k in each.value.instances :
+    k => {
+      id       = module.microservices.instances_info[k].private_ip
       port     = 5000
       external = true
     }

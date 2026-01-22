@@ -11,6 +11,9 @@ resource "aws_lb_target_group" "this" {
     unhealthy_threshold = 2
     interval            = 30
     path                = var.health_check_path
+    protocol            = var.health_check_protocol
+    port                = var.health_check_port
+    matcher             = var.health_check_matcher
   }
 }
 

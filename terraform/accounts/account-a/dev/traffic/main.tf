@@ -8,16 +8,6 @@ data "terraform_remote_state" "network" {
   }
 }
 
-data "terraform_remote_state" "network_peer" {
-  backend = "s3"
-
-  config = {
-    bucket = "tf-states-grupo2-aimar"
-    key = "core-network/dev/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
-
 data "terraform_remote_state" "security" {
   backend = "s3"
 
@@ -38,26 +28,6 @@ data "terraform_remote_state" "compute" {
   }
 }
 
-data "terraform_remote_state" "traffic" {
-  backend = "s3"
-
-    config = {
-        bucket = "tf-states-macc-grupo2"
-        key    = "traffic/dev/terraform.tfstate"
-        region = "us-east-1"
-    }
-}
-
-data "terraform_remote_state" "compute_peer" {
-  backend = "s3"
-
-    config = {
-        bucket = "tf-states-grupo2-aimar"
-        key    = "compute/dev/terraform.tfstate"
-        region = "us-east-1"
-    }
-}
-
 locals {
     microservices_alb_rules = {
         orders = {
@@ -65,7 +35,7 @@ locals {
             paths   = ["/order*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["orders"]
         }
-        /*payments = {
+        payments = {
             priority = 20
             paths   = ["/payment*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["payments"]
@@ -79,12 +49,22 @@ locals {
             priority = 40
             paths   = ["/machine*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["machines"]
-        }*/
-        auths = {
+        }
+        /*auths = {
             priority = 50
             paths   = ["/auth*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["auth_service"]
         }
+        warehouses = {
+            priority = 60
+            paths   = ["/warehouse*"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["warehouse_service"]
+        }
+        loggs = {
+            priority = 70
+            paths   = ["/logs*"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["logger_service"]
+        }*/
     }  
 }
 
@@ -96,7 +76,7 @@ module "microservice_internal_alb" {
     security_groups = [data.terraform_remote_state.security.outputs.load_balancer_sg_id]
     listeners = {
         http = {
-            port    = 80
+            port     = 80
             protocol = "HTTP"
         }
     }
@@ -159,16 +139,22 @@ module "api_gateway" {
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
     }
-    auths = {
+    /*auths = {
       base_path   = "auth"
       vpc_link_id = "microservices_vpc"
       nlb_dns     = null
       listener_arn = module.microservice_internal_alb.listeners["http"]
     }
-    /*warehouses = {
+    warehouses = {
       base_path   = "warehouse"
       vpc_link_id = "microservices_vpc"
-      nlb_dns     = data.terraform_remote_state.traffic_peer.outputs.load_balancer_dns
+      nlb_dns     = null
+      listener_arn = module.microservice_internal_alb.listeners["http"]
+    }
+    loggs = {
+      base_path   = "logs"
+      vpc_link_id = "microservices_vpc"
+      nlb_dns     = null
       listener_arn = module.microservice_internal_alb.listeners["http"]
     }*/
   }

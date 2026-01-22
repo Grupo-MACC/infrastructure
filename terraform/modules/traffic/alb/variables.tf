@@ -22,7 +22,9 @@ variable "security_groups" {
 variable "listeners" {
   description = "Listeners del ALB"
   type = map(object({
-    port     = number
-    protocol = string
+    port            = number
+    protocol        = string
+    certificate_arn = optional(string)
+    ssl_policy      = optional(string)
   }))
 }

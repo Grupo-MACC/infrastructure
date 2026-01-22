@@ -1,7 +1,7 @@
 resource "aws_secretsmanager_secret" "this" {
   for_each = var.secrets
 
-  name        = "${var.project_name}/${var.environment}/${each.key}"
+  name        = "/${var.project_name}/${var.environment}/${each.key}"
   description = each.value.description
 
   kms_key_id = var.kms_key_arn

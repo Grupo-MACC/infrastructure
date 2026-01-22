@@ -1,61 +1,123 @@
 Host bastion
-    HostName 34.198.81.239
+    HostName 3.225.76.145
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
+    IdentityFile ~/.ssh/vockey.pem
     IdentitiesOnly yes
 
-Host logs_inf_service
-    HostName 10.1.11.50
+Host bastion_2
+    HostName 3.210.39.212
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
-    ProxyJump bastion
-    IdentitiesOnly yes
-
-Host consul_service
-    HostName 10.1.11.40
-    User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
-    ProxyJump bastion
-    IdentitiesOnly yes
-
-Host rabbitmq_service
-    HostName 10.1.11.30
-    User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
-    ProxyJump bastion
+    IdentityFile ~/.ssh/vockey-2.pem
     IdentitiesOnly yes
 
 Host auth_service
     HostName 10.1.11.10
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
-    ProxyJump bastion
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
     IdentitiesOnly yes
 
-Host order_service
+Host rabbitmq_service
+    HostName 10.1.11.30
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host rabbitmq_service2
+    HostName 10.1.12.30
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host warehouse_service
     HostName 10.1.11.11
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host consul_service
+    HostName 10.1.11.40
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host logger_service
+    HostName 10.1.11.50
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host logs_inf_service
+    HostName 10.1.12.50
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host ads_service
+    HostName 10.1.12.10
+    User ubuntu
+    IdentityFile ~/.ssh/vockey-2.pem
+    ProxyJump bastion_2
+    IdentitiesOnly yes
+
+Host order_service_1
+    HostName 10.0.11.11
+    User ubuntu
+    IdentityFile ~/.ssh/vockey.pem
     ProxyJump bastion
     IdentitiesOnly yes
 
-Host machine_service
-    HostName 10.1.11.12
+Host order_service_2
+    HostName 10.0.12.11
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
+    IdentityFile ~/.ssh/vockey.pem
     ProxyJump bastion
     IdentitiesOnly yes
 
-Host payment_service
-    HostName 10.1.11.13
+Host machine_service_1
+    HostName 10.0.11.12
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
+    IdentityFile ~/.ssh/vockey.pem
     ProxyJump bastion
     IdentitiesOnly yes
 
-Host delivery_service
-    HostName 10.1.11.14
+Host machine_service_2
+    HostName 10.0.12.12
     User ubuntu
-    IdentityFile ~/.ssh/vockey-2025-26.pem
+    IdentityFile ~/.ssh/vockey.pem
+    ProxyJump bastion
+    IdentitiesOnly yes
+
+Host payment_service_1
+    HostName 10.0.11.13
+    User ubuntu
+    IdentityFile ~/.ssh/vockey.pem
+    ProxyJump bastion
+    IdentitiesOnly yes
+
+Host payment_service_2
+    HostName 10.0.12.13
+    User ubuntu
+    IdentityFile ~/.ssh/vockey.pem
+    ProxyJump bastion
+    IdentitiesOnly yes
+
+Host delivery_service_1
+    HostName 10.0.11.14
+    User ubuntu
+    IdentityFile ~/.ssh/vockey.pem
+    ProxyJump bastion
+    IdentitiesOnly yes
+
+Host delivery_service_2
+    HostName 10.0.12.14
+    User ubuntu
+    IdentityFile ~/.ssh/vockey.pem
     ProxyJump bastion
     IdentitiesOnly yes

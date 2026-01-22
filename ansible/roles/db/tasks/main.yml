@@ -24,4 +24,5 @@
     - delivery_db
     - warehouse_db
     - machine_db
+    - ads_db
   run_once: true

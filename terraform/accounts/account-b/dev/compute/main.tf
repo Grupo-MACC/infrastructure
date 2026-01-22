@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2-aimar"
+    bucket = "tf-states-grupo2-aimar"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2-aimar"
+    bucket = "tf-states-grupo2-aimar"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -27,6 +27,29 @@ module "bastion" {
     bastion_sg_id = data.terraform_remote_state.security.outputs.bastion_sg_id
 
     eip_allocation_id = data.terraform_remote_state.network.outputs.bastion_eip_allocation_id
+}
+
+module "rds_mysql" {
+  source = "../../../../modules/compute/rds"  # Ruta a tu módulo
+
+  identifier      = "db"
+  engine          = "mysql"
+  engine_version  = "8.0"
+  instance_class  = "db.t3.micro"
+  
+  allocated_storage = 20
+  storage_encrypted = true
+  
+  database_name   = "app"
+  master_username = "admin"
+  master_password = "maccadmin"  # Mejor usar AWS Secrets Manager
+
+  vpc_id              = data.terraform_remote_state.network.outputs.vpc_id
+  subnet_ids          = data.terraform_remote_state.network.outputs.private_subnet_id  # Subnets privadas
+  sg_id               = data.terraform_remote_state.security.outputs.rds_sg_id
+  publicly_accessible = false
+  
+  skip_final_snapshot = true  # false en producción
 }
 
 module "microservices" {
@@ -44,7 +67,7 @@ module "microservices" {
             private_ip    = "10.1.11.10"
         }
         consul_service = {
-            instance_type = var.instance_type
+            instance_type = var.instance_type_big
             subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[0]
             public_ip     = false
             private_ip    = "10.1.11.40"
@@ -79,8 +102,16 @@ module "microservices" {
             public_ip     = false
             private_ip    = "10.1.12.50"
         }
+        ads_service = {
+            instance_type = var.instance_type_big
+            subnet_id     = data.terraform_remote_state.network.outputs.private_subnet_id[1]
+            public_ip     = false
+            private_ip    = "10.1.12.10"
+        }
     }
 }
+
+
 
 # module "target_groups" {
 #     source = "../../../../modules/target-group"

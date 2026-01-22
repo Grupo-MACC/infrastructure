@@ -12,7 +12,7 @@ data "terraform_remote_state" "network_peer" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2-aimar"
+    bucket = "tf-states-grupo2-aimar"
     key = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -52,7 +52,7 @@ data "terraform_remote_state" "compute_peer" {
   backend = "s3"
 
     config = {
-        bucket = "tf-states-macc-grupo2-aimar"
+        bucket = "tf-states-grupo2-aimar"
         key    = "compute/dev/terraform.tfstate"
         region = "us-east-1"
     }

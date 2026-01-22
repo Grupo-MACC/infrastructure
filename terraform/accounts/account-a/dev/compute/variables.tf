@@ -27,3 +27,9 @@ variable "az" {
   type        = string
   default     = "us-east-1a"
 }
+
+variable "iam_instance_profile" {
+    description = "The IAM instance profile name to associate with the EC2 instances"
+    type        = string
+    default     = "LabInstanceProfile"
+}

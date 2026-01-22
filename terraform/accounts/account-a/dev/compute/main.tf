@@ -21,7 +21,7 @@ data "terraform_remote_state" "security" {
 data "terraform_remote_state" "compute_peer" {
   backend = "s3"
   config = {
-    bucket = "tf-states-macc-grupo2-aimar"
+    bucket = "tf-states-grupo2-aimar"
     key    = "compute/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -44,7 +44,7 @@ module "microservices" {
   ami      = var.ami
   key_name = var.ssh_key_name
   sg_id    = data.terraform_remote_state.security.outputs.microservices_sg_id
-  iam_instance_profile = "LabInstanceProfile"
+#  iam_instance_profile = "LabInstanceProfile"
 
   instances = { # 10.0.11.10 -> 10.0.11.250
       order_service_1 = {

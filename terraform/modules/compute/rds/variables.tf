@@ -81,7 +81,7 @@ variable "skip_final_snapshot" {
 variable "multi_az" {
   description = "Enable Multi-AZ deployment"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "sg_id" {

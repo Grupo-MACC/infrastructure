@@ -18,7 +18,7 @@ variable "az" {
 variable "peer_s3_path" {
   description = "The S3 bucket name for the peer VPC terraform state"
   type = string
-  default = "tf-states-macc-grupo2-aimar"
+  default = "tf-states-grupo2-aimar"
 }
 
 variable "peer_owner_id" {

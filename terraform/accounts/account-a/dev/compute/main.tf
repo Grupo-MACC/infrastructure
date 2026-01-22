@@ -153,7 +153,7 @@ module "target_groups_external" {
 
   for_each = local.vpc_b_services
 
-  name        = "${each.key}s-tg-dev"
+  name        = "${each.key}-tg-dev"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   port        = 5000
   protocol    = "HTTPS"
@@ -165,8 +165,9 @@ module "target_groups_external" {
   health_check_matcher  = "200"
 
   targets = {
-    "${each.value.instances}" = {
-      id       = each.value.instances
+    for k in each.value.instances :
+    k => {
+      id       = data.terraform_remote_state.compute_peer.outputs.instances_info[k].private_ip
       port     = 5000
       external = true
     }

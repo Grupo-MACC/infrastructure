@@ -17,17 +17,17 @@ locals {
         health    = "/machine/health"
     }
   }
-vpc_b_services = {
-    auth = {
-      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "auth_service")]
+  vpc_b_services = {
+    auths = {
+      instances = [for k, _ in data.terraform_remote_state.compute_peer.outputs.instances_info : k if startswith(k, "auth_service")]
       health    = "/auth/health"
     }
-    warehouse = {
-      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "warehouse_service")]
+    warehouses = {
+      instances = [for k, _ in data.terraform_remote_state.compute_peer.outputs.instances_info : k if startswith(k, "warehouse_service")]
       health    = "/warehouse/health"
     }
-    logger = {
-      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "logger_service")]
+    loggers = {
+      instances = [for k, _ in data.terraform_remote_state.compute_peer.outputs.instances_info : k if startswith(k, "logger_service")]
       health    = "/logs/private/health"
     }
   }

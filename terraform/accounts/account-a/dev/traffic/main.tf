@@ -53,17 +53,17 @@ locals {
         auths = {
             priority = 50
             paths   = ["/auth*"]
-            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["auth_service"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["auth"]
         }
         warehouses = {
             priority = 60
             paths   = ["/warehouse*"]
-            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["warehouse_service"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["warehouse"]
         }
         loggs = {
             priority = 70
             paths   = ["/logs*"]
-            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["logger_service"]
+            target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["logger"]
         }
     }  
 }

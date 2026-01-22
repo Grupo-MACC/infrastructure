@@ -167,11 +167,7 @@ module "target_groups_external" {
   targets = {
     for k in each.value.instances :
     k => {
-<<<<<<< HEAD
-      id       = module.microservices.instances_info[k].private_ip
-=======
       id       = data.terraform_remote_state.compute_peer.outputs.instances_info[k].private_ip
->>>>>>> b3545e328c8e02e4dd6bf667538fc87246ea5841
       port     = 5000
       external = true
     }

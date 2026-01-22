@@ -125,7 +125,7 @@ traffic:
 # =========================
 .PHONY: destroy-all destroy-backend destroy-network destroy-peering destroy-security destroy-compute
 
-destroy-all: destroy-traffic destroy-compute destroy-security destroy-peering destroy-network destroy-backend
+destroy-all: destroy-scale destroy-traffic destroy-compute destroy-security destroy-peering destroy-network destroy-backend
 
 destroy-compute:
 	@echo ">>> Destroying compute"
@@ -242,7 +242,7 @@ create-rabbit-cluster:
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/rabbit-connect-cluster.yml
 
 create-consul-cluster:
-#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
-#	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/setup-docker.yml
+	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/load-repo.yml
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service" --extra-vars "compose_file=docker-compose-node1.yaml"
 	cd ansible && ansible-playbook -i $(INVENTORY) --extra-vars "@$(VARS_FILE)" playbooks/deploy_microservice.yml -e "target_hosts=consul_service2" --extra-vars "compose_file=docker-compose-node2.yaml"

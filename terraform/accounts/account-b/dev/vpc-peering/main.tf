@@ -2,7 +2,7 @@ data "terraform_remote_state" "vpc_requester" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "vpc-peering/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-grupo2-aimar"
+    bucket = "tf-states-macc-grupo2-account-b"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }

@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -22,7 +22,7 @@ data "terraform_remote_state" "compute" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "compute/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -50,7 +50,7 @@ locals {
             paths   = ["/machine*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["machines"]
         }
-        /*auths = {
+        auths = {
             priority = 50
             paths   = ["/auth*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["auth_service"]
@@ -64,7 +64,7 @@ locals {
             priority = 70
             paths   = ["/logs*"]
             target_group_arn = data.terraform_remote_state.compute.outputs.tg_arn_map["logger_service"]
-        }*/
+        }
     }  
 }
 
@@ -139,7 +139,7 @@ module "api_gateway" {
       nlb_dns    = null
       listener_arn  = module.microservice_internal_alb.listeners["http"]
     }
-    /*auths = {
+    auths = {
       base_path   = "auth"
       vpc_link_id = "microservices_vpc"
       nlb_dns     = null
@@ -156,7 +156,7 @@ module "api_gateway" {
       vpc_link_id = "microservices_vpc"
       nlb_dns     = null
       listener_arn = module.microservice_internal_alb.listeners["http"]
-    }*/
+    }
   }
 
   stage = {

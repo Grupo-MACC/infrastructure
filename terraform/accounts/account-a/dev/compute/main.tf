@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,20 +12,20 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-macc-grupo2"
+    bucket = "tf-states-macc-grupo2-account-a"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
 }
 
-/*data "terraform_remote_state" "compute_peer" {
+data "terraform_remote_state" "compute_peer" {
   backend = "s3"
   config = {
-    bucket = "tf-states-grupo2-aimar"
+    bucket = "tf-states-macc-grupo2-account-b"
     key    = "compute/dev/terraform.tfstate"
     region = "us-east-1"
   }
-}*/
+}
 
 module "bastion" {
   source        = "../../../../modules/compute/bastion"
@@ -44,7 +44,7 @@ module "microservices" {
   ami      = var.ami
   key_name = var.ssh_key_name
   sg_id    = data.terraform_remote_state.security.outputs.microservices_sg_id
-#  iam_instance_profile = "LabInstanceProfile"
+  iam_instance_profile = "LabInstanceProfile"
 
   instances = { # 10.0.11.10 -> 10.0.11.250
       order_service_1 = {
@@ -148,7 +148,7 @@ module "target_groups_internal" {
   }
 }
 
-/*module "target_groups_external" {
+module "target_groups_external" {
   source = "../../../../modules/target-group"
 
   for_each = local.vpc_b_services
@@ -156,10 +156,13 @@ module "target_groups_internal" {
   name        = "${each.key}s-tg-dev"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   port        = 5000
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   target_type = "ip"
 
-  health_check_path = each.value.health
+  health_check_path     = each.value.health
+  health_check_protocol = "HTTPS"
+  health_check_port     = "5000"
+  health_check_matcher  = "200"
 
   targets = {
     "${each.value.instances}" = {
@@ -168,4 +171,4 @@ module "target_groups_internal" {
       external = true
     }
   }
-}*/
+}

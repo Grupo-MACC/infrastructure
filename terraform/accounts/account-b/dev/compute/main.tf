@@ -2,7 +2,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-grupo2-aimar"
+    bucket = "tf-states-macc-grupo2-account-b"
     key    = "core-network/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "security" {
   backend = "s3"
 
   config = {
-    bucket = "tf-states-grupo2-aimar"
+    bucket = "tf-states-macc-grupo2-account-b"
     key    = "security/dev/terraform.tfstate"
     region = "us-east-1"
   }
@@ -58,6 +58,7 @@ module "microservices" {
     ami = var.ami
     key_name = var.ssh_key_name
     sg_id = data.terraform_remote_state.security.outputs.microservices_sg_id
+    iam_instance_profile = "LabInstanceProfile"
     
     instances = { # 10.1.11.10 -> 10.1.11.250
         auth_service = {
@@ -110,27 +111,3 @@ module "microservices" {
         }
     }
 }
-
-
-
-# module "target_groups" {
-#     source = "../../../../modules/target-group"
-
-#     for_each = local.tg_services
-
-#     name        = "${each.key}-tg-dev"
-#     vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-#     port        = 5000
-#     protocol    = "HTTP"
-#     target_type = "instance"
-
-#     health_check_path = each.value.health
-
-#     targets = {
-#         for k in each.value.instances :
-#         k => {
-#         id   = module.microservices.instances_info[k].id
-#         port = 5000
-#         }
-#     }
-# }

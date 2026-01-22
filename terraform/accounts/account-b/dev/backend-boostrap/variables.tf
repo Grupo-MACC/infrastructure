@@ -6,7 +6,7 @@ variable "environment" {
 variable "bucket_name" {
     description = "The name of the S3 bucket for backend module"
     type        = string
-    default     = "tf-states-grupo2-aimar"
+    default     = "tf-states-macc-grupo2-account-b"
 }
 
 variable "allowed_account_arn" {

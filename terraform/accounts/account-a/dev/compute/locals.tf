@@ -17,16 +17,18 @@ locals {
         health    = "/machine/health"
     }
   }
-/*vpc_b_services = {
-    for service_name, ip in data.terraform_remote_state.compute_peer.outputs.services_private_ips :
-    regex("^(.+)_service$", service_name)[0] => {
-      instances = ip
-      health    = "/${regex("^(.+)_service$", service_name)[0]}/health"
+vpc_b_services = {
+    auth = {
+      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "auth_service")]
+      health    = "/auth/health"
     }
-    if (
-      startswith(service_name, "auth_") ||
-      startswith(service_name, "warehouse_") ||
-      startswith(service_name, "logger_")
-    )
-  }*/
+    warehouse = {
+      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "warehouse_service")]
+      health    = "/warehouse/health"
+    }
+    logger = {
+      instances = [for k, _ in module.microservices.instances_info : k if startswith(k, "logger_service")]
+      health    = "/logs/private/health"
+    }
+  }
 }
